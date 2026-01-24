@@ -25,6 +25,7 @@ type Model struct {
 	CurrentQuery string
 	Videos       []list.Item
 	VideoList    models.VideoListModel
+	FormatList   models.FormatListModel
 	ErrMsg       string
 }
 
@@ -38,10 +39,11 @@ func NewModel() *Model {
 	s.Style = s.Style.Foreground(styles.PinkColor)
 
 	return &Model{
-		Search:    models.NewSearchModel(),
-		State:     types.StateSearchInput,
-		Spinner:   s,
-		VideoList: models.NewVideoListModel(),
+		Search:     models.NewSearchModel(),
+		State:      types.StateSearchInput,
+		Spinner:    s,
+		VideoList:  models.NewVideoListModel(),
+		FormatList: models.NewFormatListModel(),
 	}
 }
 
@@ -53,6 +55,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.Height = msg.Height
 		m.Search = m.Search.HandleResize(m.Width, m.Height)
 		m.VideoList = m.VideoList.HandleResize(m.Width, m.Height)
+		m.FormatList = m.FormatList.HandleResize(m.Width, m.Height)
 	case spinner.TickMsg:
 		var spinnerCmd tea.Cmd
 		m.Spinner, spinnerCmd = m.Spinner.Update(msg)
@@ -63,12 +66,24 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.CurrentQuery = strings.TrimSpace(msg.Query)
 		cmd = utils.PerformSearch(msg.Query)
 		m.ErrMsg = ""
+	case types.StartFormatMsg:
+		m.State = types.StateLoading
+		m.LoadingType = "format"
+		cmd = utils.FetchFormats(msg.URL)
+		m.ErrMsg = ""
 	case types.SearchResultMsg:
 		m.LoadingType = ""
 		m.Videos = msg.Videos
 		m.VideoList.List.SetItems(msg.Videos)
 		m.VideoList.CurrentQuery = m.CurrentQuery
 		m.State = types.StateVideoList
+		m.ErrMsg = msg.Err
+		return m, nil
+	case types.FormatResultMsg:
+		m.LoadingType = ""
+		m.Videos = msg.Formats
+		m.FormatList.List.SetItems(msg.Formats)
+		m.State = types.StateFormatList
 		m.ErrMsg = msg.Err
 		return m, nil
 	case tea.KeyMsg:
@@ -84,6 +99,10 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case types.StateVideoList:
 			updatedList, listCmd := m.VideoList.Update(msg)
 			m.VideoList = updatedList.(models.VideoListModel)
+			cmd = listCmd
+		case types.StateFormatList:
+			updatedList, listCmd := m.FormatList.Update(msg)
+			m.FormatList = updatedList.(models.FormatListModel)
 			cmd = listCmd
 		}
 	}
@@ -104,11 +123,12 @@ func (m *Model) View() string {
 		content = m.LoadingView()
 	case types.StateVideoList:
 		content = m.VideoList.View()
+	case types.StateFormatList:
+		content = m.FormatList.View()
 	}
+
 	var left string
-
 	switch m.State {
-
 	case types.StateSearchInput:
 		left = "Ctrl+C: quit"
 	default:
@@ -117,7 +137,7 @@ func (m *Model) View() string {
 
 	right := ""
 	if m.ErrMsg != "" {
-		right = lipgloss.NewStyle().Foreground(styles.ErrorColor).Render(m.ErrMsg)
+		right = lipgloss.NewStyle().Foreground(styles.ErrorColor).Render("⚠ " + m.ErrMsg)
 	}
 
 	var statusBar string
@@ -137,6 +157,8 @@ func (m *Model) LoadingView() string {
 	switch m.LoadingType {
 	case "search":
 		loadingText = fmt.Sprintf("Searching for \"%s\"", m.CurrentQuery)
+	case "format":
+		loadingText = "Fetching formats..."
 	}
 
 	fmt.Fprintf(&s, "\n%s %s\n", m.Spinner.View(), loadingText)

@@ -1,7 +1,6 @@
 package models
 
 import (
-	"log"
 	"strings"
 	"xytz/internal/styles"
 	"xytz/internal/types"
@@ -27,6 +26,8 @@ func NewVideoListModel() VideoListModel {
 	li.SetShowHelp(false)
 	li.SetShowStatusBar(false)
 	li.SetShowTitle(false)
+	li.SetFilteringEnabled(true)
+	li.SetShowFilter(true)
 	li.FilterInput.Cursor.Style = li.FilterInput.Cursor.Style.Foreground(styles.PinkColor)
 	li.FilterInput.PromptStyle = li.FilterInput.PromptStyle.Foreground(styles.SecondaryColor)
 
@@ -60,9 +61,10 @@ func (m VideoListModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.Type {
 		case tea.KeyEnter:
-			if item := m.List.SelectedItem(); item != nil {
-				if video, ok := item.(types.VideoItem); ok {
-					log.Printf("Selected video: %s", video.Title())
+			if video, ok := m.List.SelectedItem().(types.VideoItem); ok {
+				url := "https://www.youtube.com/watch?v=" + video.ID
+				cmd = func() tea.Msg {
+					return types.StartFormatMsg{URL: url}
 				}
 			}
 		}

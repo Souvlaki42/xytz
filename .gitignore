@@ -5,7 +5,8 @@
 *.dylib
 
 ./xytz
-xytz.exe
+./main
+./xytz.exe
 
 *.test
 *.out
@@ -34,3 +35,4 @@ Thumbs.db
 *.bak
 *.backup
 *.old
+.fuse_*

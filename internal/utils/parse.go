@@ -57,29 +57,6 @@ func ExtractVideoID(url string) string {
 	return ""
 }
 
-func formatNumber(n float64) string {
-	if n >= 1e9 {
-		return fmt.Sprintf("%.1fB", n/1e9)
-	}
-	if n >= 1e6 {
-		return fmt.Sprintf("%.1fM", n/1e6)
-	}
-	if n >= 1e3 {
-		return fmt.Sprintf("%.1fK", n/1e3)
-	}
-	return fmt.Sprintf("%.0f", n)
-}
-
-func formatDuration(seconds float64) string {
-	hours := int(seconds / 3600)
-	minutes := int((seconds - float64(hours*3600)) / 60)
-	secs := int(seconds - float64(hours*3600) - float64(minutes*60))
-	if hours > 0 {
-		return fmt.Sprintf("%d:%02d:%02d", hours, minutes, secs)
-	}
-	return fmt.Sprintf("%d:%02d", minutes, secs)
-}
-
 func ParseVideoItem(line string) (types.VideoItem, error) {
 	var data map[string]any
 	if err := json.Unmarshal([]byte(line), &data); err != nil {
