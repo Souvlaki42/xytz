@@ -2,9 +2,10 @@ package app
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/xdagiz/xytz/internal/styles"
 	"github.com/xdagiz/xytz/internal/types"
-	"strings"
 
 	"github.com/charmbracelet/lipgloss"
 	zone "github.com/lrstanley/bubblezone"
@@ -15,7 +16,6 @@ const (
 	statusBack              = "b: Back"
 	statusEnterBack         = "Enter: Back"
 	statusEnterBackToSearch = "Enter: Back to Search"
-	statusPauseResume       = "p: Pause/Resume"
 	statusPause             = "p: Pause"
 	statusResume            = "p: Resume"
 	statusCancel            = "c: Cancel"
@@ -61,11 +61,12 @@ func getStatusBarText(state types.State, cfg StatusBarConfig) string {
 
 func joinStatus(parts ...string) string {
 	const separator = " • "
-	result := parts[0]
+	var result strings.Builder
+	result.WriteString(parts[0])
 	for i := 1; i < len(parts); i++ {
-		result += separator + parts[i]
+		result.WriteString(separator + parts[i])
 	}
-	return result
+	return result.String()
 }
 
 func (m *Model) View() string {
@@ -120,9 +121,11 @@ func (m *Model) LoadingView() string {
 	case "search":
 		loadingText = fmt.Sprintf("Searching for \"%s\"", m.CurrentQuery)
 	case "format":
-		loadingText = "Fetching formats..."
-	case "channel_search":
+		loadingText = "Loading formats..."
+	case "channel":
 		loadingText = fmt.Sprintf("Fetching videos for channel @%s", m.VideoList.ChannelName)
+	case "playlist":
+		loadingText = fmt.Sprintf("Searching playlist: %s", m.CurrentQuery)
 	}
 
 	fmt.Fprintf(&s, "\n%s %s\n", m.Spinner.View(), loadingText)

@@ -14,13 +14,18 @@ import (
 	"github.com/xdagiz/xytz/internal/types"
 )
 
-func executeYTDLP(searchURL string, searchLimit int) types.SearchResultMsg {
+func executeYTDLP(searchURL string) types.SearchResultMsg {
 	if err := exec.Command("yt-dlp", "--version").Run(); err != nil {
 		errMsg := fmt.Sprintf("yt-dlp not found: %v\nPlease install yt-dlp: https://github.com/yt-dlp/yt-dlp#installation", err)
 		return types.SearchResultMsg{Err: errMsg}
 	}
 
-	playlistItems := fmt.Sprintf("1:%d", searchLimit)
+	cfg, err := config.Load()
+	if err != nil {
+		cfg = config.GetDefault()
+	}
+
+	playlistItems := fmt.Sprintf("1:%d", cfg.SearchLimit)
 	cmd := exec.Command(
 		"yt-dlp",
 		"--flat-playlist",
@@ -106,11 +111,6 @@ func PerformSearch(query, sortParam string) tea.Cmd {
 	return tea.Cmd(func() tea.Msg {
 		query = strings.TrimSpace(query)
 
-		cfg, err := config.Load()
-		if err != nil {
-			cfg = config.GetDefault()
-		}
-
 		videoID := ExtractVideoID(query)
 		isURL := videoID != ""
 
@@ -120,17 +120,32 @@ func PerformSearch(query, sortParam string) tea.Cmd {
 		} else {
 			encodedQuery := url.QueryEscape(query)
 			searchURL := "https://www.youtube.com/results?search_query=" + encodedQuery + "&sp=" + sortParam
-			return executeYTDLP(searchURL, cfg.SearchLimit)
+			return executeYTDLP(searchURL)
 		}
 	})
 }
 
-func PerformChannelSearch(channelURL string) tea.Cmd {
+func PerformChannelSearch(username string) tea.Cmd {
 	return tea.Cmd(func() tea.Msg {
-		cfg, err := config.Load()
-		if err != nil {
-			cfg = config.GetDefault()
+		encodedChannel := url.QueryEscape(username)
+		channelURL := "https://www.youtube.com/@" + encodedChannel + "/videos"
+
+		return executeYTDLP(channelURL)
+	})
+}
+
+func PerformPlaylistSearch(query string) tea.Cmd {
+	return tea.Cmd(func() tea.Msg {
+		log.Printf("searching for playlist: %s", query)
+		var playlistURL string
+		if strings.Contains(query, "https://www.youtube.com/list=") {
+			log.Printf("playlist with url: %s", query)
+			playlistURL = query
+		} else {
+			log.Printf("playlist without url: %s", query)
+			encodedPlaylist := url.QueryEscape(query)
+			playlistURL = "https://www.youtube.com/list=" + encodedPlaylist
 		}
-		return executeYTDLP(channelURL, cfg.SearchLimit)
+		return executeYTDLP(playlistURL)
 	})
 }

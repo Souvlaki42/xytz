@@ -54,8 +54,12 @@ func (m VideoListModel) View() string {
 	var headerStyle lipgloss.Style
 
 	if m.ErrMsg != "" {
-		headerText = fmt.Sprintf("Channel not found: @%s", m.ChannelName)
 		headerStyle = styles.ErrorMessageStyle.PaddingTop(1)
+		if strings.Contains(m.ErrMsg, "Channel not found") {
+			headerText = fmt.Sprintf("Channel not found: @%s", m.ChannelName)
+		} else {
+			headerText = fmt.Sprintf("An Error Occured: %s", m.ErrMsg)
+		}
 	} else if m.IsChannelSearch {
 		headerText = fmt.Sprintf("Videos for channel @%s", m.ChannelName)
 		headerStyle = styles.SectionHeaderStyle

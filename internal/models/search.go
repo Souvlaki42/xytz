@@ -2,7 +2,6 @@ package models
 
 import (
 	"log"
-	"net/url"
 	"os/exec"
 	"strings"
 
@@ -93,7 +92,7 @@ func (m SearchModel) View() string {
 	} else {
 		s.WriteRune('\n')
 		s.WriteString(styles.SortTitle.Render("Sort By"))
-		s.WriteString(styles.SortHelp.Render("(←/→ or tab to cycle)"))
+		s.WriteString(styles.SortHelp.Render("(tab to cycle)"))
 		s.WriteRune('\n')
 		currentSort := styles.SortItem.Render(">", m.SortBy.GetDisplayName())
 		s.WriteString(currentSort)
@@ -235,10 +234,18 @@ func (m SearchModel) Update(msg tea.Msg) (SearchModel, tea.Cmd) {
 						m.Input.CursorEnd()
 					} else {
 						m.addToHistory(query)
-						encodedChannel := url.QueryEscape(args)
-						channelURL := "https://www.youtube.com/@" + encodedChannel + "/videos"
 						cmd = func() tea.Msg {
-							return types.StartChannelURLMsg{URL: channelURL, ChannelName: args}
+							return types.StartChannelURLMsg{ChannelName: args}
+						}
+					}
+				case "playlist":
+					if args == "" {
+						m.Input.SetValue("/playlist ")
+						m.Input.CursorEnd()
+					} else {
+						m.addToHistory(query)
+						cmd = func() tea.Msg {
+							return types.StartPlaylistURLMsg{Query: args}
 						}
 					}
 				case "help":
@@ -270,10 +277,10 @@ func (m SearchModel) Update(msg tea.Msg) (SearchModel, tea.Cmd) {
 		case tea.KeyDown, tea.KeyCtrlN:
 			m.navigateHistory(-1)
 			m.Input.CursorEnd()
-		case tea.KeyTab, tea.KeyLeft:
+		case tea.KeyTab:
 			m.SortBy = m.SortBy.Next()
 			return m, nil
-		case tea.KeyShiftTab, tea.KeyRight:
+		case tea.KeyShiftTab:
 			m.SortBy = m.SortBy.Prev()
 			return m, nil
 		case tea.KeyCtrlO:

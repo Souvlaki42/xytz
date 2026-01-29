@@ -88,4 +88,8 @@ type StartChannelURLMsg struct {
 	ChannelName string
 }
 
+type StartPlaylistURLMsg struct {
+	Query string
+}
+
 type BackFromVideoListMsg struct{}

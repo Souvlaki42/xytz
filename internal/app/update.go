@@ -88,11 +88,17 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	case types.StartChannelURLMsg:
 		m.State = types.StateLoading
-		m.LoadingType = "channel_search"
-		m.CurrentQuery = msg.URL
+		m.LoadingType = "channel"
 		m.VideoList.IsChannelSearch = true
 		m.VideoList.ChannelName = msg.ChannelName
-		cmd = utils.PerformChannelSearch(msg.URL)
+		cmd = utils.PerformChannelSearch(msg.ChannelName)
+		m.ErrMsg = ""
+		return m, cmd
+	case types.StartPlaylistURLMsg:
+		m.State = types.StateLoading
+		m.LoadingType = "playlist"
+		m.CurrentQuery = strings.TrimSpace(msg.Query)
+		cmd = utils.PerformPlaylistSearch(msg.Query)
 		m.ErrMsg = ""
 		return m, cmd
 	case types.BackFromVideoListMsg:
