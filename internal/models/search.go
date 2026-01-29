@@ -10,6 +10,7 @@ import (
 	"github.com/xdagiz/xytz/internal/styles"
 	"github.com/xdagiz/xytz/internal/types"
 	"github.com/xdagiz/xytz/internal/utils"
+	"github.com/xdagiz/xytz/internal/version"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -70,7 +71,7 @@ func (m SearchModel) View() string {
 		lipgloss.NewStyle().PaddingLeft(4).Render(lipgloss.JoinVertical(
 			lipgloss.Left,
 			lipgloss.NewStyle().Foreground(styles.SecondaryColor).Bold(true).Render("xytz *Youtube from your terminal*"),
-			lipgloss.NewStyle().Foreground(styles.SecondaryColor).Bold(true).Render("v0.2.0 alpha"),
+			lipgloss.NewStyle().Foreground(styles.MutedColor).Render(version.GetVersion()),
 			zone.Mark("open_github", lipgloss.NewStyle().Foreground(styles.MauveColor).Underline(true).Render("https://github.com/xdagiz/xytz")),
 		))))
 	s.WriteRune('\n')

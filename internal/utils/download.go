@@ -7,7 +7,6 @@ import (
 	"log"
 	"os/exec"
 	"sync"
-	"syscall"
 
 	"github.com/xdagiz/xytz/internal/config"
 	"github.com/xdagiz/xytz/internal/types"
@@ -33,38 +32,6 @@ func StartDownload(program *tea.Program, url, formatID string) tea.Cmd {
 		go doDownload(program, url, formatID, downloadPath)
 
 		return nil
-	})
-}
-
-func PauseDownload() tea.Cmd {
-	return tea.Cmd(func() tea.Msg {
-		downloadMutex.Lock()
-		defer downloadMutex.Unlock()
-
-		if currentCmd != nil && currentCmd.Process != nil && !isPaused {
-			isPaused = true
-			if err := currentCmd.Process.Signal(syscall.SIGSTOP); err != nil {
-				log.Printf("Failed to pause download: %v", err)
-			}
-		}
-
-		return types.PauseDownloadMsg{}
-	})
-}
-
-func ResumeDownload() tea.Cmd {
-	return tea.Cmd(func() tea.Msg {
-		downloadMutex.Lock()
-		defer downloadMutex.Unlock()
-
-		if currentCmd != nil && currentCmd.Process != nil && isPaused {
-			isPaused = false
-			if err := currentCmd.Process.Signal(syscall.SIGCONT); err != nil {
-				log.Printf("Failed to resume download: %v", err)
-			}
-		}
-
-		return types.ResumeDownloadMsg{}
 	})
 }
 

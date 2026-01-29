@@ -54,7 +54,6 @@ func (s SortBy) Next() SortBy {
 	}
 }
 
-// ParseSortBy converts a string to SortBy type
 func ParseSortBy(s string) SortBy {
 	switch s {
 	case "date":

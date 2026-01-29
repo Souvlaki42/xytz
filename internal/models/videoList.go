@@ -32,7 +32,7 @@ func NewVideoListModel() VideoListModel {
 	li.SetShowHelp(false)
 	li.SetShowStatusBar(false)
 	li.SetShowTitle(false)
-	li.FilterInput.Cursor.Style = li.FilterInput.Cursor.Style.Foreground(styles.PinkColor)
+	li.FilterInput.Cursor.Style = li.FilterInput.Cursor.Style.Foreground(styles.MauveColor)
 	li.FilterInput.PromptStyle = li.FilterInput.PromptStyle.Foreground(styles.SecondaryColor)
 
 	return VideoListModel{
