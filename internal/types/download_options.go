@@ -19,13 +19,13 @@ func DownloadOptions() []DownloadOption {
 			RequiresFFmpeg: true,
 		},
 		{
-			Name:           "Embed metadata",
+			Name:           "Add Metadata",
 			KeyBinding:     tea.KeyCtrlJ,
 			ConfigField:    "EmbedMetadata",
 			RequiresFFmpeg: true,
 		},
 		{
-			Name:           "Embed chapters",
+			Name:           "Add Chapters",
 			KeyBinding:     tea.KeyCtrlL,
 			ConfigField:    "EmbedChapters",
 			RequiresFFmpeg: true,

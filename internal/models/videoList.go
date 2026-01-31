@@ -94,6 +94,8 @@ func (m VideoListModel) Update(msg tea.Msg) (VideoListModel, tea.Cmd) {
 				cmd = func() tea.Msg {
 					return types.BackFromVideoListMsg{}
 				}
+			} else if len(m.List.Items()) == 0 {
+				return m, nil
 			} else if video, ok := m.List.SelectedItem().(types.VideoItem); ok {
 				url := "https://www.youtube.com/watch?v=" + video.ID
 				cmd = func() tea.Msg {

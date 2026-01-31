@@ -64,8 +64,17 @@ func (m FormatListModel) Update(msg tea.Msg) (FormatListModel, tea.Cmd) {
 				m.List.SetFilterState(list.FilterApplied)
 				return m, nil
 			}
+			if len(m.List.Items()) == 0 {
+				return m, nil
+			}
 			item := m.List.SelectedItem()
-			format := item.(types.FormatItem)
+			if item == nil {
+				return m, nil
+			}
+			format, ok := item.(types.FormatItem)
+			if !ok {
+				return m, nil
+			}
 			cmd = func() tea.Msg {
 				msg := types.StartDownloadMsg{
 					URL:             m.URL,

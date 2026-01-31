@@ -119,13 +119,13 @@ func (m *Model) LoadingView() string {
 	loadingText := "Loading..."
 	switch m.LoadingType {
 	case "search":
-		loadingText = fmt.Sprintf("Searching for \"%s\"", m.CurrentQuery)
+		loadingText = fmt.Sprintf("Searching for \"%s\"", styles.SpinnerStyle.Render(m.CurrentQuery))
 	case "format":
 		loadingText = "Loading formats..."
 	case "channel":
-		loadingText = fmt.Sprintf("Loading videos for channel @%s", m.VideoList.ChannelName)
+		loadingText = "Loading videos for channel " + styles.SpinnerStyle.Render("@"+m.VideoList.ChannelName)
 	case "playlist":
-		loadingText = fmt.Sprintf("Searching playlist: %s", m.CurrentQuery)
+		loadingText = fmt.Sprintf("Searching playlist: %s", styles.SpinnerStyle.Render(m.CurrentQuery))
 	}
 
 	fmt.Fprintf(&s, "\n%s %s\n", m.Spinner.View(), loadingText)

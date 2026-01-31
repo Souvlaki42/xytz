@@ -339,7 +339,17 @@ func (m SearchModel) Update(msg tea.Msg) (SearchModel, tea.Cmd) {
 	}
 
 	var inputCmd tea.Cmd
+	oldValue := m.Input.Value()
 	m.Input, inputCmd = m.Input.Update(msg)
+	newValue := m.Input.Value()
+
+	if m.HistoryIndex >= 0 && m.HistoryIndex < len(m.History) {
+		expectedValue := m.History[m.HistoryIndex]
+		if oldValue != newValue && newValue != expectedValue {
+			m.HistoryIndex = -1
+			m.OriginalQuery = ""
+		}
+	}
 
 	if m.Autocomplete.Visible {
 		currentValue := m.Input.Value()
