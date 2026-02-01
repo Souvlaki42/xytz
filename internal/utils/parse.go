@@ -96,8 +96,8 @@ func ParseVideoItem(line string) (types.VideoItem, error) {
 		return types.VideoItem{}, fmt.Errorf("skipping live/short content with zero duration")
 	}
 
-	viewsStr := formatNumber(viewCountFloat)
-	durationStr := formatDuration(durationFloat)
+	viewsStr := FormatNumber(viewCountFloat)
+	durationStr := FormatDuration(durationFloat)
 
 	channelLen := len(channel)
 	if channelLen > 30 {
@@ -112,6 +112,7 @@ func ParseVideoItem(line string) (types.VideoItem, error) {
 		Desc:       desc,
 		Views:      viewCountFloat,
 		Duration:   durationFloat,
+		Channel:    channel,
 	}
 
 	return videoItem, nil

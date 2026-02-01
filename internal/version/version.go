@@ -12,6 +12,6 @@ func GetVersion() string {
 			return info.Main.Version
 		}
 	}
-	
+
 	return Version
 }

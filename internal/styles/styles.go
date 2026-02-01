@@ -22,8 +22,9 @@ var (
 				Bold(true).
 				Foreground(SecondaryColor).
 				Padding(1, 0)
-	StatusBarStyle = lipgloss.NewStyle().Foreground(MutedColor).MarginTop(1).PaddingBottom(1)
+	StatusBarStyle = lipgloss.NewStyle().Foreground(MutedColor).Padding(1, 2)
 	InputStyle     = lipgloss.NewStyle().Border(lipgloss.NormalBorder(), true, false).BorderForeground(MutedColor)
+	MutedStyle     = lipgloss.NewStyle().Foreground(MutedColor)
 
 	listStyle              = lipgloss.NewStyle().Padding(0, 3)
 	ListTitleStyle         = listStyle.Foreground(lipgloss.Color("#bac2de"))

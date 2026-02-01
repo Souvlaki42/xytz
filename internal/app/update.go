@@ -39,6 +39,8 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.State = types.StateLoading
 		m.LoadingType = "format"
 		m.FormatList.URL = msg.URL
+		m.FormatList.SelectedVideo = msg.SelectedVideo
+		m.SelectedVideo = msg.SelectedVideo
 		m.FormatList.DownloadOptions = m.Search.DownloadOptions
 		m.FormatList.ResetTab()
 		cmd = utils.FetchFormats(msg.URL)
@@ -64,6 +66,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.Download.Completed = false
 		m.Download.CurrentSpeed = ""
 		m.Download.CurrentETA = ""
+		m.Download.SelectedVideo = m.SelectedVideo
 		m.LoadingType = "download"
 		cmd = utils.StartDownload(m.Program, msg.URL, msg.FormatID, msg.DownloadOptions)
 		return m, cmd
@@ -78,6 +81,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	case types.DownloadCompleteMsg:
 		m.State = types.StateSearchInput
+		m.SelectedVideo = types.VideoItem{}
 		return m, nil
 	case types.PauseDownloadMsg:
 		m.Download.Paused = true
@@ -107,6 +111,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case types.BackFromVideoListMsg:
 		m.State = types.StateSearchInput
 		m.ErrMsg = ""
+		m.SelectedVideo = types.VideoItem{}
 		m.VideoList.List.ResetSelected()
 		m.VideoList.ErrMsg = ""
 		return m, nil

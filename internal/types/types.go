@@ -19,7 +19,8 @@ type StartSearchMsg struct {
 }
 
 type StartFormatMsg struct {
-	URL string
+	URL           string
+	SelectedVideo VideoItem
 }
 
 type ProgressMsg struct {
@@ -34,6 +35,7 @@ type VideoItem struct {
 	Desc       string
 	Views      float64
 	Duration   float64
+	Channel    string
 }
 
 func (i VideoItem) Title() string       { return i.VideoTitle }

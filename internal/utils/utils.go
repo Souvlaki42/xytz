@@ -18,7 +18,7 @@ func bytesToHuman(bytes float64) string {
 	return fmt.Sprintf("%.2f %s", bytes, suffixes[i])
 }
 
-func formatDuration(seconds float64) string {
+func FormatDuration(seconds float64) string {
 	hours := int(seconds / 3600)
 	minutes := int((seconds - float64(hours*3600)) / 60)
 	secs := int(seconds - float64(hours*3600) - float64(minutes*60))
@@ -28,7 +28,7 @@ func formatDuration(seconds float64) string {
 	return fmt.Sprintf("%d:%02d", minutes, secs)
 }
 
-func formatNumber(n float64) string {
+func FormatNumber(n float64) string {
 	if n >= 1e9 {
 		return fmt.Sprintf("%.1fB", n/1e9)
 	}

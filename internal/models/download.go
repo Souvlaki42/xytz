@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -14,13 +15,14 @@ import (
 )
 
 type DownloadModel struct {
-	Progress     progress.Model
-	CurrentSpeed string
-	CurrentETA   string
-	Completed    bool
-	Paused       bool
-	Cancelled    bool
-	Destination  string
+	Progress      progress.Model
+	SelectedVideo types.VideoItem
+	CurrentSpeed  string
+	CurrentETA    string
+	Completed     bool
+	Paused        bool
+	Cancelled     bool
+	Destination   string
 }
 
 func NewDownloadModel() DownloadModel {
@@ -93,6 +95,17 @@ func (m DownloadModel) HandleResize(w, h int) DownloadModel {
 
 func (m DownloadModel) View() string {
 	var s strings.Builder
+
+	if m.SelectedVideo.ID != "" {
+		s.WriteString(styles.SectionHeaderStyle.Render(m.SelectedVideo.Title()))
+		s.WriteRune('\n')
+		s.WriteString(styles.MutedStyle.Render(fmt.Sprintf("⏱  %s", utils.FormatDuration(m.SelectedVideo.Duration))))
+		s.WriteRune('\n')
+		s.WriteString(styles.MutedStyle.Render(fmt.Sprintf("👁  %s views", utils.FormatNumber(m.SelectedVideo.Views))))
+		s.WriteRune('\n')
+		s.WriteString(styles.MutedStyle.Render(fmt.Sprintf("📺 %s", m.SelectedVideo.Channel)))
+		s.WriteRune('\n')
+	}
 
 	statusText := "⇣ Downloading"
 	if m.Completed {

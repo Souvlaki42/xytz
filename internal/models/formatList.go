@@ -1,10 +1,12 @@
 package models
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/xdagiz/xytz/internal/styles"
 	"github.com/xdagiz/xytz/internal/types"
+	"github.com/xdagiz/xytz/internal/utils"
 
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
@@ -30,6 +32,7 @@ type FormatListModel struct {
 	CustomInput      textinput.Model
 	Autocomplete     FormatAutocompleteModel
 	URL              string
+	SelectedVideo    types.VideoItem
 	DownloadOptions  []types.DownloadOption
 	ActiveTab        FormatTab
 	VideoFormats     []list.Item
@@ -72,6 +75,17 @@ func (m FormatListModel) Init() tea.Cmd {
 
 func (m FormatListModel) View() string {
 	var s strings.Builder
+
+	if m.SelectedVideo.ID != "" {
+		s.WriteString(styles.SectionHeaderStyle.Render(m.SelectedVideo.Title()))
+		s.WriteRune('\n')
+		s.WriteString(styles.MutedStyle.Render(fmt.Sprintf("⏱  %s", utils.FormatDuration(m.SelectedVideo.Duration))))
+		s.WriteRune('\n')
+		s.WriteString(styles.MutedStyle.Render(fmt.Sprintf("👁  %s views", utils.FormatNumber(m.SelectedVideo.Views))))
+		s.WriteRune('\n')
+		s.WriteString(styles.MutedStyle.Render(fmt.Sprintf("📺 %s", m.SelectedVideo.Channel)))
+		s.WriteRune('\n')
+	}
 
 	s.WriteString(styles.SectionHeaderStyle.Foreground(styles.MauveColor).Padding(1, 0).Render("Select a Format"))
 	s.WriteRune('\n')
@@ -122,7 +136,7 @@ func (m FormatListModel) renderTabs() string {
 func (m FormatListModel) HandleResize(w, h int) FormatListModel {
 	m.Width = w
 	m.Height = h
-	m.List.SetSize(w, h-8)
+	m.List.SetSize(w, h-14)
 	m.CustomInput.Width = w - 12
 	m.Autocomplete.HandleResize(w, h)
 	return m

@@ -113,6 +113,9 @@ func (m *Model) View() string {
 	contentStyle := lipgloss.NewStyle().Height(m.Height - 3)
 	content = contentStyle.Render(content)
 
+	containerStyle := lipgloss.NewStyle().Padding(0, 1).Border(lipgloss.NormalBorder(), false).BorderForeground(styles.MutedColor)
+	content = containerStyle.Render(content)
+
 	return zone.Scan(lipgloss.JoinVertical(lipgloss.Top, content, statusBar))
 }
 

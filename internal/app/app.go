@@ -11,19 +11,20 @@ import (
 )
 
 type Model struct {
-	Program      *tea.Program
-	Search       models.SearchModel
-	State        types.State
-	Width        int
-	Height       int
-	Spinner      spinner.Model
-	LoadingType  string
-	CurrentQuery string
-	Videos       []list.Item
-	VideoList    models.VideoListModel
-	FormatList   models.FormatListModel
-	Download     models.DownloadModel
-	ErrMsg       string
+	Program       *tea.Program
+	Search        models.SearchModel
+	State         types.State
+	Width         int
+	Height        int
+	Spinner       spinner.Model
+	LoadingType   string
+	CurrentQuery  string
+	Videos        []list.Item
+	VideoList     models.VideoListModel
+	FormatList    models.FormatListModel
+	Download      models.DownloadModel
+	SelectedVideo types.VideoItem
+	ErrMsg        string
 }
 
 func (m *Model) Init() tea.Cmd {
