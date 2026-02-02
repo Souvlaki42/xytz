@@ -192,21 +192,26 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case types.StateVideoList:
 			switch msg.String() {
 			case "b", "esc":
-				m.State = types.StateSearchInput
-				m.ErrMsg = ""
-				m.VideoList.List.ResetSelected()
-				m.VideoList.PlaylistURL = ""
-				return m, nil
+				if m.VideoList.List.FilterState() == list.Unfiltered {
+					m.State = types.StateSearchInput
+					m.ErrMsg = ""
+					m.Search.Input.SetValue("")
+					m.VideoList.List.ResetSelected()
+					m.VideoList.PlaylistURL = ""
+					return m, nil
+				}
 			}
 			m.VideoList, cmd = m.VideoList.Update(msg)
 		case types.StateFormatList:
-			if m.FormatList.ActiveTab != models.FormatTabCustom {
-				switch msg.String() {
-				case "b", "esc":
-					m.State = types.StateVideoList
-					m.ErrMsg = ""
-					m.FormatList.List.ResetSelected()
-					return m, nil
+			switch msg.String() {
+			case "b", "esc":
+				if m.FormatList.ActiveTab != models.FormatTabCustom {
+					if m.VideoList.List.FilterState() == list.Unfiltered {
+						m.State = types.StateVideoList
+						m.ErrMsg = ""
+						m.FormatList.List.ResetSelected()
+						return m, nil
+					}
 				}
 			}
 			m.FormatList, cmd = m.FormatList.Update(msg)

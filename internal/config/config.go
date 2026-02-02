@@ -1,10 +1,10 @@
 package config
 
 import (
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
-	"log"
 
 	"gopkg.in/yaml.v3"
 )
@@ -97,18 +97,6 @@ func (c *Config) applyDefaults() {
 
 	if c.SortByDefault == "" {
 		c.SortByDefault = defaults.SortByDefault
-	}
-
-	if !c.EmbedSubtitles && defaults.EmbedSubtitles {
-		c.EmbedSubtitles = defaults.EmbedSubtitles
-	}
-
-	if !c.EmbedMetadata && defaults.EmbedMetadata {
-		c.EmbedMetadata = defaults.EmbedMetadata
-	}
-
-	if !c.EmbedChapters && defaults.EmbedChapters {
-		c.EmbedChapters = defaults.EmbedChapters
 	}
 }
 

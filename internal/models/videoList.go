@@ -31,6 +31,8 @@ func NewVideoListModel() VideoListModel {
 	vd.Styles.SelectedTitle = styles.ListSelectedTitleStyle
 	vd.Styles.NormalDesc = styles.ListDescStyle
 	vd.Styles.SelectedDesc = styles.ListSelectedDescStyle
+	vd.Styles.DimmedTitle = styles.ListDimmedTitle
+	vd.Styles.DimmedDesc = styles.ListDimmedDesc
 	li := list.New([]list.Item{}, vd, 0, 0)
 	li.SetShowStatusBar(false)
 	li.SetShowTitle(false)

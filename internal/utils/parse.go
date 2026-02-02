@@ -86,7 +86,7 @@ func ExtractChannelUsername(input string) string {
 					channelID = channelID[:idx]
 				}
 
-				return input
+				return channelID
 			}
 		}
 

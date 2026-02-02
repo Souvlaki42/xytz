@@ -28,9 +28,16 @@ var (
 
 	listStyle              = lipgloss.NewStyle().Padding(0, 3)
 	ListTitleStyle         = listStyle.Foreground(lipgloss.Color("#bac2de"))
-	ListSelectedTitleStyle = listStyle.Foreground(MauveColor).Bold(true)
-	ListDescStyle          = listStyle.Foreground(MutedColor)
-	ListSelectedDescStyle  = listStyle.Foreground(lipgloss.Color("#cdd6f4"))
+	ListSelectedTitleStyle = listStyle.Foreground(MauveColor).Bold(true).
+				Border(lipgloss.NormalBorder(), false, false, false, true).
+				BorderForeground(MauveColor).
+				Padding(0, 0, 0, 2)
+
+	ListDescStyle         = listStyle.Foreground(MutedColor)
+	ListSelectedDescStyle = listStyle.Foreground(SecondaryColor)
+	ListDimmedTitle       = listStyle.Foreground(MutedColor).
+				Padding(0, 0, 0, 3)
+	ListDimmedDesc = listStyle.Foreground(MutedColor)
 
 	ListContainer = lipgloss.NewStyle().PaddingBottom(1)
 

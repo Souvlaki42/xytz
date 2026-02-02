@@ -137,7 +137,9 @@ func FetchFormats(url string) tea.Cmd {
 		}
 
 		out, err := io.ReadAll(stdout)
-		stdout.Close()
+		if err := stdout.Close(); err != nil {
+			log.Printf("failed to close formats stdout: %v", err)
+		}
 
 		formatsMutex.Lock()
 		wasCancelled := formatsCanceled

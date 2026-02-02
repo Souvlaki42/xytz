@@ -21,7 +21,7 @@ var (
 	searchCanceled bool
 )
 
-func executeYTDLP(searchURL string) interface{} {
+func executeYTDLP(searchURL string) any {
 	cfg, err := config.Load()
 	if err != nil {
 		cfg = config.GetDefault()
@@ -69,6 +69,7 @@ func executeYTDLP(searchURL string) interface{} {
 		errMsg := fmt.Sprintf("failed to get stderr pipe: %v", err)
 		return types.SearchResultMsg{Err: errMsg}
 	}
+
 	defer stderr.Close()
 
 	if err := cmd.Start(); err != nil {

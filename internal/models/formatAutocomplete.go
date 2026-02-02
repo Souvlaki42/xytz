@@ -246,10 +246,7 @@ func (m *FormatAutocompleteModel) View(width, height int) string {
 
 	var b strings.Builder
 
-	visibleItems := height - 2
-	if visibleItems > m.MaxHeight {
-		visibleItems = m.MaxHeight
-	}
+	visibleItems := min(height-2, m.MaxHeight)
 
 	if m.ScrollOffset < 0 {
 		m.ScrollOffset = 0
@@ -259,7 +256,7 @@ func (m *FormatAutocompleteModel) View(width, height int) string {
 		m.ScrollOffset = max(0, len(m.Filtered)-visibleItems)
 	}
 
-	for i := 0; i < visibleItems; i++ {
+	for i := range visibleItems {
 		idx := m.ScrollOffset + i
 		if idx >= len(m.Filtered) {
 			break

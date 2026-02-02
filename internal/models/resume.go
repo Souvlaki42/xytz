@@ -30,7 +30,7 @@ func DefaultResumeKeyMap() ResumeKeyMap {
 			key.WithKeys("enter"),
 		),
 		Delete: key.NewBinding(
-			key.WithKeys("d", "delete"),
+			key.WithKeys("delete"),
 		),
 	}
 }
@@ -89,7 +89,7 @@ func (m *ResumeModel) LoadItems() {
 		return
 	}
 
-	for i := 0; i < len(items); i++ {
+	for i := range items {
 		for j := i + 1; j < len(items); j++ {
 			if items[i].Timestamp.Before(items[j].Timestamp) {
 				items[i], items[j] = items[j], items[i]
@@ -177,10 +177,7 @@ func (m *ResumeModel) updateScrollOffset(height int) {
 		return
 	}
 
-	visibleItems := height - 2
-	if visibleItems > m.MaxHeight {
-		visibleItems = m.MaxHeight
-	}
+	visibleItems := min(height-2, m.MaxHeight)
 
 	if m.ScrollOffset < 0 {
 		m.ScrollOffset = 0
