@@ -8,9 +8,10 @@ A beautiful TUI app for searching and downloading YouTube videos, built with Go 
 
 - **Interactive Search** - Search YouTube videos directly from your terminal
 - **Channel Browsing** - View all videos from a specific channel with `/channel @username`
-- **Playlist Support** - Browse and download videos from playlists
+- **Playlist Support** - Browse and download videos from playlists with `/playlist <id>`
 - **Format Selection** - Choose from available video/audio formats with quality indicators
 - **Download Management** - Real-time progress tracking with speed and ETA
+- **Resume Downloads** - Resume unfinished downloads with `/resume`
 - **Search History** - Persistent search history for quick access
 - **Keyboard Navigation** - Vim-style keybindings and intuitive shortcuts
 - **Cross-Platform** - Works on Linux and Windows (MacOS not tested)
@@ -29,8 +30,8 @@ A beautiful TUI app for searching and downloading YouTube videos, built with Go 
 The easiest way to install xytz is to download a pre-built binary from the [Releases](https://github.com/xdagiz/xytz/releases) page.
 
 ```bash
-curl -LO https://github.com/xdagiz/xytz/releases/latest/download/xytz-v1.0.0-linux-amd64.tar.gz
-tar -xzf xytz-v1.0.0-linux-amd64.tar.gz
+curl -LO https://github.com/xdagiz/xytz/releases/latest/download/xytz-v0.7.0-linux-amd64.tar.gz
+tar -xzf xytz-v0.7.0-linux-amd64.tar.gz
 sudo mv xytz /usr/local/bin/
 ```
 
@@ -63,6 +64,12 @@ sudo mv xytz /usr/local/bin/
 ### Using Build Script
 
 ```bash
+# Build for Linux x64
+./scripts/build.sh linux/amd64
+
+# Build for Windows x64
+./scripts/build.sh windows/amd64
+
 # Build for all platforms
 ./scripts/build.sh
 
@@ -182,4 +189,3 @@ Features like embedding subtitles require ffmpeg. Install it and ensure it's in 
 ---
 
 By [xdagiz](https://github.com/xdagiz)
-
