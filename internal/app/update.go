@@ -1,7 +1,6 @@
 package app
 
 import (
-	"log"
 	"strings"
 
 	"github.com/xdagiz/xytz/internal/models"
@@ -180,9 +179,6 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.Type {
 		case tea.KeyCtrlC:
-			if err := m.Search.SaveDownloadOptionsConfig(); err != nil {
-				log.Printf("Failed to save download options on quit: %v", err)
-			}
 			return m, tea.Quit
 		}
 		switch m.State {

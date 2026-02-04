@@ -460,23 +460,3 @@ func openGithub() {
 		}
 	}()
 }
-
-func (m *SearchModel) SaveDownloadOptionsConfig() error {
-	cfg, err := config.Load()
-	if err != nil {
-		return err
-	}
-
-	for _, opt := range m.DownloadOptions {
-		switch opt.ConfigField {
-		case "EmbedSubtitles":
-			cfg.EmbedSubtitles = opt.Enabled
-		case "EmbedMetadata":
-			cfg.EmbedMetadata = opt.Enabled
-		case "EmbedChapters":
-			cfg.EmbedChapters = opt.Enabled
-		}
-	}
-
-	return cfg.Save()
-}
