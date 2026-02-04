@@ -166,6 +166,8 @@ func FetchFormats(url string) tea.Cmd {
 			return types.SearchResultMsg{Err: errMsg}
 		}
 
+		videoInfo := extractVideoInfo(data)
+
 		formatsAny, _ := data["formats"].([]any)
 		var videoFormats []list.Item
 		var audioFormats []list.Item
@@ -361,8 +363,43 @@ func FetchFormats(url string) tea.Cmd {
 			AudioFormats:     audioFormats,
 			ThumbnailFormats: thumbnailFormats,
 			AllFormats:       allFormats,
+			VideoInfo:        videoInfo,
 		}
 	})
+}
+
+func extractVideoInfo(data map[string]any) types.VideoItem {
+	videoID, _ := data["id"].(string)
+	title, _ := data["title"].(string)
+	channel, _ := data["uploader"].(string)
+
+	var viewCount float64
+	if vc, ok := data["view_count"]; ok {
+		viewCount = parseFloat(vc)
+	}
+
+	var duration float64
+	if d, ok := data["duration"]; ok {
+		duration = parseFloat(d)
+	}
+
+	viewsStr := FormatNumber(viewCount)
+	durationStr := FormatDuration(duration)
+
+	if len(channel) > 30 {
+		channel = channel[:27] + "..."
+	}
+
+	desc := fmt.Sprintf("%s • %s views • %s", durationStr, viewsStr, channel)
+
+	return types.VideoItem{
+		ID:         videoID,
+		VideoTitle: title,
+		Desc:       desc,
+		Views:      viewCount,
+		Duration:   duration,
+		Channel:    channel,
+	}
 }
 
 func CancelFormats() tea.Cmd {

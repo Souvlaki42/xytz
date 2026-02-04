@@ -70,6 +70,7 @@ type FormatResultMsg struct {
 	AudioFormats     []list.Item
 	ThumbnailFormats []list.Item
 	AllFormats       []list.Item
+	VideoInfo        VideoItem
 	Err              string
 }
 

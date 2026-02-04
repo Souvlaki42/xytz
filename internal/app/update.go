@@ -61,6 +61,9 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case types.FormatResultMsg:
 		m.LoadingType = ""
 		m.FormatList.SetFormats(msg.VideoFormats, msg.AudioFormats, msg.ThumbnailFormats, msg.AllFormats)
+		if msg.VideoInfo.ID != "" {
+			m.FormatList.SelectedVideo = msg.VideoInfo
+		}
 		m.State = types.StateFormatList
 		m.ErrMsg = msg.Err
 		return m, nil
@@ -68,7 +71,11 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.State = types.StateDownload
 		m.Download.Completed = false
 		m.Download.Cancelled = false
-		m.Download.SelectedVideo = m.SelectedVideo
+		if m.SelectedVideo.ID == "" {
+			m.Download.SelectedVideo = m.FormatList.SelectedVideo
+		} else {
+			m.Download.SelectedVideo = m.SelectedVideo
+		}
 		m.LoadingType = "download"
 		cmd = utils.StartDownload(m.Program, msg.URL, msg.FormatID, m.SelectedVideo.Title(), m.Search.DownloadOptions)
 		return m, cmd
@@ -107,7 +114,11 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	case types.CancelDownloadMsg:
 		m.Download.Cancelled = true
-		m.State = types.StateVideoList
+		if m.SelectedVideo.ID == "" {
+			m.State = types.StateSearchInput
+		} else {
+			m.State = types.StateVideoList
+		}
 		m.ErrMsg = "Download cancelled"
 		m.FormatList.List.ResetSelected()
 		return m, nil
@@ -205,7 +216,11 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "b", "esc":
 				if m.FormatList.ActiveTab != models.FormatTabCustom {
 					if m.FormatList.List.FilterState() == list.Unfiltered {
-						m.State = types.StateVideoList
+						if m.SelectedVideo.ID == "" {
+							m.State = types.StateSearchInput
+						} else {
+							m.State = types.StateVideoList
+						}
 						m.ErrMsg = ""
 						m.FormatList.List.ResetSelected()
 						return m, nil
