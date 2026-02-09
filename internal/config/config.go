@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/xdagiz/xytz/internal/paths"
 	"gopkg.in/yaml.v3"
 )
 
@@ -24,12 +25,7 @@ type Config struct {
 }
 
 func GetConfigDir() string {
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		return ".config/xytz"
-	}
-
-	return filepath.Join(homeDir, ".config", "xytz")
+	return paths.GetConfigDir()
 }
 
 func GetConfigPath() string {

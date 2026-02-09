@@ -8,6 +8,7 @@ import (
 	"github.com/xdagiz/xytz/internal/app"
 	"github.com/xdagiz/xytz/internal/config"
 	"github.com/xdagiz/xytz/internal/models"
+	"github.com/xdagiz/xytz/internal/paths"
 
 	tea "github.com/charmbracelet/bubbletea"
 	zone "github.com/lrstanley/bubblezone"
@@ -59,14 +60,8 @@ func startApp() {
 	p := tea.NewProgram(m, tea.WithAltScreen(), tea.WithMouseCellMotion())
 	m.Program = p
 
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		log.Printf("Warning: Could not get home directory: %v", err)
-		homeDir = "."
-	}
-
-	logDir := filepath.Join(homeDir, ".local", "share", "xytz")
-	if err := os.MkdirAll(logDir, 0755); err != nil {
+	logDir := paths.GetDataDir()
+	if err := paths.EnsureDirExists(logDir); err != nil {
 		log.Printf("Warning: Could not create log directory: %v", err)
 		logDir = "."
 	}

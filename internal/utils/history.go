@@ -5,21 +5,17 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/xdagiz/xytz/internal/paths"
 )
 
 const HistoryFileName = "history"
 
 func GetHistoryFilePath() string {
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		log.Printf("Warning: Could not get home directory: %v", err)
-		return HistoryFileName
-	}
-
-	dataDir := filepath.Join(homeDir, ".local", "share", "xytz")
-	if err := os.MkdirAll(dataDir, 0755); err != nil {
+	dataDir := paths.GetDataDir()
+	if err := paths.EnsureDirExists(dataDir); err != nil {
 		log.Printf("Warning: Could not create data directory: %v", err)
-		return filepath.Join(homeDir, HistoryFileName)
+		return HistoryFileName
 	}
 
 	return filepath.Join(dataDir, HistoryFileName)

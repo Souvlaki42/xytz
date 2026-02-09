@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"log"
 	"os"
-
 	"path/filepath"
 	"time"
+
+	"github.com/xdagiz/xytz/internal/paths"
 )
 
 const UnfinishedFileName = ".xytz_unfinished.json"
@@ -19,20 +20,13 @@ type UnfinishedDownload struct {
 }
 
 func GetUnfinishedFilePath() string {
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		log.Printf("Warning: Could not get home directory: %v", err)
+	dataDir := paths.GetDataDir()
+	if err := paths.EnsureDirExists(dataDir); err != nil {
+		log.Printf("Warning: Could not create data directory: %v", err)
 		return UnfinishedFileName
 	}
 
-	localDir := filepath.Join(homeDir, ".local", "share", "xytz")
-
-	if err := os.MkdirAll(localDir, 0755); err != nil {
-		log.Printf("Warning: Could not create directory %s: %v", localDir, err)
-		return filepath.Join(homeDir, UnfinishedFileName)
-	}
-
-	return filepath.Join(localDir, UnfinishedFileName)
+	return filepath.Join(dataDir, UnfinishedFileName)
 }
 
 func LoadUnfinished() ([]UnfinishedDownload, error) {
