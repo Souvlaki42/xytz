@@ -2,32 +2,14 @@ package config
 
 func GetDefault() *Config {
 	return &Config{
-		SearchLimit:         DefaultSearchLimit,
-		DefaultDownloadPath: DefaultDownloadPath,
-		DefaultFormat:       DefaultFormat,
-		SortByDefault:       DefaultSortBy,
-		EmbedSubtitles:      DefaultEmbedSubtitles,
-		EmbedMetadata:       DefaultEmbedMetadata,
-		EmbedChapters:       DefaultEmbedChapters,
-		CookiesBrowser:      DefaultCookiesBrowser,
-		CookiesFile:         DefaultCookiesFile,
+		SearchLimit:         25,
+		DefaultDownloadPath: "~/Videos",
+		DefaultFormat:       "bv*+ba/b",
+		SortByDefault:       "relevance",
+		EmbedSubtitles:      false,
+		EmbedMetadata:       true,
+		EmbedChapters:       true,
+		CookiesBrowser:      "",
+		CookiesFile:         "",
 	}
 }
-
-const DefaultSearchLimit = 25
-
-const DefaultDownloadPath = "~/Downloads"
-
-const DefaultFormat = "bestvideo+bestaudio/best"
-
-const DefaultSortBy = "relevance"
-
-const DefaultEmbedSubtitles = false
-
-const DefaultEmbedMetadata = true
-
-const DefaultEmbedChapters = true
-
-const DefaultCookiesBrowser = ""
-
-const DefaultCookiesFile = ""

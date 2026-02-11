@@ -39,13 +39,23 @@ func executeYTDLP(sm *SearchManager, searchURL string, searchLimit int) any {
 	}
 
 	playlistItems := fmt.Sprintf("1:%d", searchLimit)
-	cmd := exec.Command(
-		ytDlpPath,
+	var args []string
+	if cfg.CookiesBrowser != "" {
+		args = append(args, "--cookies-from-browser", cfg.CookiesBrowser)
+		log.Printf("Using browser cookies: %s", cfg.CookiesBrowser)
+	} else if cfg.CookiesFile != "" {
+		args = append(args, "--cookies", cfg.CookiesFile)
+		log.Printf("Using cookies file: %s", cfg.CookiesFile)
+	}
+
+	args = append(args,
 		"--flat-playlist",
 		"--dump-json",
 		"--playlist-items", playlistItems,
 		searchURL,
 	)
+
+	cmd := exec.Command(ytDlpPath, args...)
 
 	sm.SetCmd(cmd)
 
