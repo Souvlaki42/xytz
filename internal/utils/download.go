@@ -159,6 +159,7 @@ func doDownload(dm *DownloadManager, program *tea.Program, url, formatID string,
 
 	stderr, err2 := cmd.StderrPipe()
 	if err2 != nil {
+		stdout.Close()
 		log.Printf("stderr pipe error: %v", err2)
 		errMsg := fmt.Sprintf("stderr pipe error: %v", err2)
 		program.Send(types.DownloadResultMsg{Err: errMsg})
@@ -166,6 +167,8 @@ func doDownload(dm *DownloadManager, program *tea.Program, url, formatID string,
 	}
 
 	if err := cmd.Start(); err != nil {
+		stdout.Close()
+		stderr.Close()
 		log.Printf("start error: %v", err)
 		errMsg := fmt.Sprintf("start error: %v", err)
 		program.Send(types.DownloadResultMsg{Err: errMsg})
@@ -175,13 +178,13 @@ func doDownload(dm *DownloadManager, program *tea.Program, url, formatID string,
 	parser := NewProgressParser()
 	var wg sync.WaitGroup
 	readPipe := func(pipe io.Reader) {
-		wg.Add(1)
 		defer wg.Done()
 		parser.ReadPipe(pipe, func(percent float64, speed, eta, status, destination string) {
 			program.Send(types.ProgressMsg{Percent: percent, Speed: speed, Eta: eta, Status: status, Destination: destination, FileExtension: fileExtension})
 		})
 	}
 
+	wg.Add(2)
 	go readPipe(stdout)
 	go readPipe(stderr)
 	wg.Wait()
