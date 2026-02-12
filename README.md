@@ -2,7 +2,20 @@
 
 A beautiful TUI app for searching and downloading YouTube videos, built with Go and [Bubble Tea](https://github.com/charmbracelet/bubbletea).
 
-![Go Version](https://img.shields.io/badge/go-1.25+-00ADD8?style=flat&logo=go)
+<p align="start">
+  <a href="https://github.com/xdagiz/xytz/blob/master/LICENSE">
+    <img alt="GitHub" src="https://img.shields.io/github/license/xdagiz/xytz"/>
+  </a>
+  <a href="https://goreportcard.com/report/github.com/xdagiz/xytz">
+    <img src="https://goreportcard.com/badge/github.com/xdagiz/xytz" />
+  </a>
+  <a href="https://github.com/xdagiz/xytz/issues">
+    <img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat" alt="CodeFactor" />
+  </a>
+  <a href="https://github.com/xdagiz/xytz/tags" rel="nofollow">
+    <img alt="GitHub tag (latest SemVer pre-release)" src="https://img.shields.io/github/v/tag/xdagiz/xytz?include_prereleases&label=version"/>
+  </a>
+</p>
 
 https://github.com/user-attachments/assets/4e3f98c7-554f-4b9e-adac-52511ae69f32
 
@@ -126,6 +139,8 @@ embed_metadata: true # Embed metadata in downloads
 embed_chapters: true # Embed chapters in downloads
 ffmpeg_path: "" # Custom ffmpeg path (optional)
 yt_dlp_path: "" # Custom yt-dlp path (optional)
+cookies_browser: "" # Browser for cookies: chrome, firefox, etc (optional)
+cookies_file: "" # Path to cookies.txt file for authentication (optional)
 ```
 
 The configuration file is created automatically on first run with sensible defaults.

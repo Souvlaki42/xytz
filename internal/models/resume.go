@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"sort"
 
 	"github.com/xdagiz/xytz/internal/styles"
@@ -85,7 +86,10 @@ func (m *ResumeModel) HandleResize(width, height int) {
 
 func (m *ResumeModel) DeleteSelected() {
 	if item, ok := m.List.SelectedItem().(ResumeItem); ok {
-		utils.RemoveUnfinished(item.URL)
+		if err := utils.RemoveUnfinished(item.URL); err != nil {
+			fmt.Printf("unable to remove unfinished download item: %v", err)
+		}
+
 		m.LoadItems()
 	}
 }

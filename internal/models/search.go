@@ -225,7 +225,10 @@ func (m SearchModel) Update(msg tea.Msg) (SearchModel, tea.Cmd) {
 		return m, autocompleteCmd
 	}
 
-	var cmd tea.Cmd
+	var (
+		cmd      tea.Cmd
+		inputCmd tea.Cmd
+	)
 
 	switch msg := msg.(type) {
 	case tea.MouseMsg:
@@ -297,7 +300,6 @@ func (m SearchModel) Update(msg tea.Msg) (SearchModel, tea.Cmd) {
 	}
 
 	oldValue := m.Input.Value()
-	var inputCmd tea.Cmd
 	m.Input, inputCmd = m.Input.Update(msg)
 	newValue := m.Input.Value()
 
@@ -342,13 +344,14 @@ func (m SearchModel) handleResumeEsc() (SearchModel, tea.Cmd, bool) {
 		return m, nil, false
 	}
 
-	if m.ResumeList.List.FilterState() == list.Filtering {
-		m.ResumeList.List.SetFilterState(list.Unfiltered)
+	if HandleListEsc(m.ResumeList.List) {
+		m.ResumeList.Hide()
+		m.ResumeList.List.ResetFilter()
+		m.Input.SetValue("")
 		return m, nil, true
 	}
-	m.ResumeList.Hide()
-	m.ResumeList.List.ResetFilter()
-	m.Input.SetValue("")
+
+	m.ResumeList.List.SetFilterState(list.Unfiltered)
 	return m, nil, true
 }
 
@@ -358,6 +361,7 @@ func (m SearchModel) handleEnterKey() (SearchModel, tea.Cmd) {
 			m.ResumeList.List.SetFilterState(list.FilterApplied)
 			return m, nil
 		}
+
 		if item := m.ResumeList.SelectedItem(); item != nil {
 			m.ResumeList.Hide()
 			cmd := func() tea.Msg {
@@ -367,6 +371,7 @@ func (m SearchModel) handleEnterKey() (SearchModel, tea.Cmd) {
 					Title:    item.Title,
 				}
 			}
+
 			return m, cmd
 		}
 	}
@@ -386,6 +391,7 @@ func (m SearchModel) handleEnterKey() (SearchModel, tea.Cmd) {
 	cmd := func() tea.Msg {
 		return types.StartSearchMsg{Query: query}
 	}
+
 	return m, cmd
 }
 
@@ -465,4 +471,12 @@ func keyTypeToString(key tea.KeyType) string {
 	default:
 		return ""
 	}
+}
+
+func HandleListEsc(l list.Model) bool {
+	if l.SettingFilter() || l.IsFiltered() {
+		return false
+	}
+
+	return true
 }

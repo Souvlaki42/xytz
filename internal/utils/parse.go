@@ -3,6 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"strconv"
 	"strings"
 
@@ -73,6 +74,49 @@ func ExtractChannelUsername(input string) string {
 	}
 
 	return input
+}
+
+func ExtractPlaylistID(input string) string {
+	input = strings.TrimSpace(input)
+
+	if strings.Contains(input, "https://www.youtube.com/playlist?list=") {
+		if result := extractAfterDelimiter(input, "list=", "&", "#"); result != "" {
+			return result
+		}
+	}
+
+	if strings.Contains(input, "watch?v=") && strings.Contains(input, "list=") {
+		if result := extractAfterDelimiter(input, "list=", "&", "#"); result != "" {
+			return result
+		}
+	}
+
+	return input
+}
+
+func BuildPlaylistURL(input string) string {
+	playlistID := ExtractPlaylistID(input)
+	return "https://www.youtube.com/playlist?list=" + playlistID
+}
+
+func BuildChannelURL(input string) string {
+	input = strings.TrimSpace(input)
+
+	if strings.Contains(input, "youtube.com") {
+		channelURL := input
+		if !strings.HasSuffix(channelURL, "/videos") {
+			channelURL = strings.TrimSuffix(channelURL, "/") + "/videos"
+		}
+
+		return channelURL
+	}
+
+	if len(input) >= 22 && strings.HasPrefix(input, "UC") {
+		return "https://www.youtube.com/channel/" + input + "/videos"
+	}
+
+	encodedChannel := url.QueryEscape(input)
+	return "https://www.youtube.com/@" + encodedChannel + "/videos"
 }
 
 func ParseVideoItem(line string) (types.VideoItem, error) {

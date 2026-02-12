@@ -47,8 +47,7 @@ func StartDownload(dm *DownloadManager, program *tea.Program, title string, req 
 			c = cfg.CookiesFile
 		}
 
-		go doDownload(dm, program, req.URL, req.FormatID, req.IsAudioTab, req.ABR, downloadPath, cfg.YTDLPPath, cb, c, req.Options)
-
+		go doDownload(dm, program, req, downloadPath, cfg.YTDLPPath, cb, c)
 		return nil
 	})
 }
@@ -63,13 +62,17 @@ func CancelDownload(dm *DownloadManager) tea.Cmd {
 	})
 }
 
-func doDownload(dm *DownloadManager, program *tea.Program, url, formatID string, isAudioTab bool, abr float64, outputPath, ytDlpPath, cookiesBrowser, cookiesFile string, options []types.DownloadOption) {
+func doDownload(dm *DownloadManager, program *tea.Program, req types.DownloadRequest, outputPath, ytDlpPath, cookiesBrowser, cookiesFile string) {
 	ctx, cancel := context.WithCancel(context.Background())
 	dm.SetContext(ctx, cancel)
 
 	if ytDlpPath == "" {
 		ytDlpPath = "yt-dlp"
 	}
+
+	url := req.URL
+	formatID := req.FormatID
+	abr := req.ABR
 
 	if url == "" {
 		log.Printf("download error: empty URL provided")
@@ -84,7 +87,7 @@ func doDownload(dm *DownloadManager, program *tea.Program, url, formatID string,
 		fileExtension string
 	)
 
-	if isAudioTab {
+	if req.IsAudioTab {
 		audioQuality := fmt.Sprintf("%dK", int(abr))
 		fileExtension = ".mp3"
 		args = []string{
@@ -131,7 +134,7 @@ func doDownload(dm *DownloadManager, program *tea.Program, url, formatID string,
 		args = append([]string{"--cookies", cookiesFile}, args...)
 	}
 
-	for _, opt := range options {
+	for _, opt := range req.Options {
 		if opt.Enabled {
 			switch opt.ConfigField {
 			case "EmbedSubtitles":

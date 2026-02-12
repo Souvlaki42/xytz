@@ -6,6 +6,7 @@ import (
 
 	"github.com/xdagiz/xytz/internal/styles"
 	"github.com/xdagiz/xytz/internal/types"
+	"github.com/xdagiz/xytz/internal/utils"
 
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
@@ -114,16 +115,7 @@ func (m VideoListModel) Update(msg tea.Msg) (VideoListModel, tea.Cmd) {
 			} else if video, ok := m.List.SelectedItem().(types.VideoItem); ok {
 				var url string
 				if m.IsPlaylistSearch && m.PlaylistURL != "" {
-					playlistID := ""
-					if strings.Contains(m.PlaylistURL, "list=") {
-						parts := strings.Split(m.PlaylistURL, "list=")
-						if len(parts) > 1 {
-							playlistID = parts[1]
-							if idx := strings.Index(playlistID, "&"); idx != -1 {
-								playlistID = playlistID[:idx]
-							}
-						}
-					}
+					playlistID := utils.ExtractPlaylistID(m.PlaylistURL)
 
 					if playlistID != "" {
 						url = fmt.Sprintf("https://www.youtube.com/watch?v=%s&list=%s", video.ID, playlistID)

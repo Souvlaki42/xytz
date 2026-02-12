@@ -25,11 +25,11 @@ type StartFormatMsg struct {
 }
 
 type ProgressMsg struct {
-	Percent     float64
-	Speed       string
-	Eta         string
-	Status      string
-	Destination string
+	Percent       float64
+	Speed         string
+	Eta           string
+	Status        string
+	Destination   string
 	FileExtension string
 }
 
@@ -59,6 +59,8 @@ type FormatItem struct {
 	Resolution  string
 	FormatType  string
 	ABR         float64
+	VideoSize   float64
+	AudioSize   float64
 }
 
 func (i FormatItem) Title() string       { return i.FormatTitle }

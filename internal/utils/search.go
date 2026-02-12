@@ -15,7 +15,7 @@ import (
 	"github.com/xdagiz/xytz/internal/types"
 )
 
-func executeYTDLP(sm *SearchManager, searchURL string, searchLimit int) any {
+func executeYTDLP(sm *SearchManager, searchURL string, searchLimit int, cookiesBrowser, cookiesFile string) any {
 	cfg, err := config.Load()
 	if err != nil {
 		log.Printf("Warning: Failed to load config, using defaults: %v", err)
@@ -41,13 +41,20 @@ func executeYTDLP(sm *SearchManager, searchURL string, searchLimit int) any {
 
 	playlistItems := fmt.Sprintf("1:%d", searchLimit)
 
+	if cookiesBrowser == "" {
+		cookiesBrowser = cfg.CookiesBrowser
+	}
+	if cookiesFile == "" {
+		cookiesFile = cfg.CookiesFile
+	}
+
 	var args []string
-	if cfg.CookiesBrowser != "" {
-		args = append(args, "--cookies-from-browser", cfg.CookiesBrowser)
-		log.Printf("Using browser cookies: %s", cfg.CookiesBrowser)
-	} else if cfg.CookiesFile != "" {
-		args = append(args, "--cookies", cfg.CookiesFile)
-		log.Printf("Using cookies file: %s", cfg.CookiesFile)
+	if cookiesBrowser != "" {
+		args = append(args, "--cookies-from-browser", cookiesBrowser)
+		log.Printf("Using browser cookies: %s", cookiesBrowser)
+	} else if cookiesFile != "" {
+		args = append(args, "--cookies", cookiesFile)
+		log.Printf("Using cookies file: %s", cookiesFile)
 	}
 
 	args = append(args,
@@ -87,15 +94,13 @@ func executeYTDLP(sm *SearchManager, searchURL string, searchLimit int) any {
 	stderrScanner := bufio.NewScanner(stderr)
 	stderrLines := []string{}
 	var stderrWg sync.WaitGroup
-	stderrWg.Add(1)
-	go func() {
-		defer stderrWg.Done()
+	stderrWg.Go(func() {
 		for stderrScanner.Scan() {
 			line := stderrScanner.Text()
 			stderrLines = append(stderrLines, line)
 			log.Printf("yt-dlp stderr: %s", line)
 		}
-	}()
+	})
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -153,7 +158,7 @@ func executeYTDLP(sm *SearchManager, searchURL string, searchLimit int) any {
 	}
 }
 
-func PerformSearch(sm *SearchManager, query, sortParam string, searchLimit int) tea.Cmd {
+func PerformSearch(sm *SearchManager, query, sortParam string, searchLimit int, cookiesBrowser, cookiesFile string) tea.Cmd {
 	return tea.Cmd(func() tea.Msg {
 		query = strings.TrimSpace(query)
 
@@ -166,53 +171,22 @@ func PerformSearch(sm *SearchManager, query, sortParam string, searchLimit int) 
 		} else {
 			encodedQuery := url.QueryEscape(query)
 			searchURL := "https://www.youtube.com/results?search_query=" + encodedQuery + "&sp=" + sortParam
-			return executeYTDLP(sm, searchURL, searchLimit)
+			return executeYTDLP(sm, searchURL, searchLimit, cookiesBrowser, cookiesFile)
 		}
 	})
 }
 
-func PerformChannelSearch(sm *SearchManager, input string, searchLimit int) tea.Cmd {
+func PerformChannelSearch(sm *SearchManager, input string, searchLimit int, cookiesBrowser, cookiesFile string) tea.Cmd {
 	return tea.Cmd(func() tea.Msg {
-		var channelURL string
-
-		if strings.Contains(input, "youtube.com") {
-			channelURL = input
-			if !strings.HasSuffix(channelURL, "/videos") {
-				channelURL = strings.TrimSuffix(channelURL, "/") + "/videos"
-			}
-		} else if len(input) >= 22 && strings.HasPrefix(input, "UC") {
-			channelURL = "https://www.youtube.com/channel/" + input + "/videos"
-		} else {
-			encodedChannel := url.QueryEscape(input)
-			channelURL = "https://www.youtube.com/@" + encodedChannel + "/videos"
-		}
-
-		return executeYTDLP(sm, channelURL, searchLimit)
+		channelURL := BuildChannelURL(input)
+		return executeYTDLP(sm, channelURL, searchLimit, cookiesBrowser, cookiesFile)
 	})
 }
 
-func PerformPlaylistSearch(sm *SearchManager, query string, searchLimit int) tea.Cmd {
+func PerformPlaylistSearch(sm *SearchManager, query string, searchLimit int, cookiesBrowser, cookiesFile string) tea.Cmd {
 	return tea.Cmd(func() tea.Msg {
-		var playlistURL string
-
-		if strings.Contains(query, "https://www.youtube.com/playlist?list=") {
-			playlistURL = query
-		} else if strings.Contains(query, "watch?v=") && strings.Contains(query, "list=") {
-			parts := strings.Split(query, "list=")
-			if len(parts) > 1 {
-				playlistID := parts[1]
-				if idx := strings.Index(playlistID, "&"); idx != -1 {
-					playlistID = playlistID[:idx]
-				}
-				playlistURL = "https://www.youtube.com/playlist?list=" + playlistID
-			} else {
-				playlistURL = "https://www.youtube.com/playlist?list=" + query
-			}
-		} else {
-			playlistURL = "https://www.youtube.com/playlist?list=" + query
-		}
-
-		return executeYTDLP(sm, playlistURL, searchLimit)
+		playlistURL := BuildPlaylistURL(query)
+		return executeYTDLP(sm, playlistURL, searchLimit, cookiesBrowser, cookiesFile)
 	})
 }
 

@@ -38,7 +38,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.VideoList.ChannelName = ""
 		m.VideoList.PlaylistName = ""
 		m.VideoList.PlaylistURL = ""
-		cmd = utils.PerformSearch(m.SearchManager, msg.Query, m.Search.SortBy.GetSPParam(), m.Search.SearchLimit)
+		cmd = utils.PerformSearch(m.SearchManager, msg.Query, m.Search.SortBy.GetSPParam(), m.Search.SearchLimit, m.Search.CookiesFromBrowser, m.Search.Cookies)
 		m.ErrMsg = ""
 		m.Search.Input.SetValue("")
 
@@ -172,7 +172,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.VideoList.IsPlaylistSearch = false
 		m.VideoList.ChannelName = msg.ChannelName
 		m.VideoList.PlaylistURL = ""
-		cmd = utils.PerformChannelSearch(m.SearchManager, msg.ChannelName, m.Search.SearchLimit)
+		cmd = utils.PerformChannelSearch(m.SearchManager, msg.ChannelName, m.Search.SearchLimit, m.Search.CookiesFromBrowser, m.Search.Cookies)
 		m.ErrMsg = ""
 		return m, cmd
 
@@ -183,23 +183,8 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.VideoList.IsPlaylistSearch = true
 		m.VideoList.IsChannelSearch = false
 		m.VideoList.PlaylistName = strings.TrimSpace(msg.Query)
-		if strings.Contains(msg.Query, "https://www.youtube.com/playlist?list=") {
-			m.VideoList.PlaylistURL = msg.Query
-		} else if strings.Contains(msg.Query, "watch?v=") && strings.Contains(msg.Query, "list=") {
-			parts := strings.Split(msg.Query, "list=")
-			if len(parts) > 1 {
-				playlistID := parts[1]
-				if idx := strings.Index(playlistID, "&"); idx != -1 {
-					playlistID = playlistID[:idx]
-				}
-				m.VideoList.PlaylistURL = "https://www.youtube.com/playlist?list=" + playlistID
-			} else {
-				m.VideoList.PlaylistURL = "https://www.youtube.com/playlist?list=" + msg.Query
-			}
-		} else {
-			m.VideoList.PlaylistURL = "https://www.youtube.com/playlist?list=" + msg.Query
-		}
-		cmd = utils.PerformPlaylistSearch(m.SearchManager, msg.Query, m.Search.SearchLimit)
+		m.VideoList.PlaylistURL = utils.BuildPlaylistURL(msg.Query)
+		cmd = utils.PerformPlaylistSearch(m.SearchManager, msg.Query, m.Search.SearchLimit, m.Search.CookiesFromBrowser, m.Search.Cookies)
 		m.ErrMsg = ""
 		return m, cmd
 
@@ -236,7 +221,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case types.StateVideoList:
 			switch msg.String() {
 			case "b", "esc":
-				if m.VideoList.List.FilterState() == list.Unfiltered {
+				if HandleListEsc(m.VideoList.List) {
 					m.State = types.StateSearchInput
 					m.ErrMsg = ""
 					m.Search.Input.SetValue("")
@@ -245,6 +230,8 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.VideoList.PlaylistURL = ""
 					return m, nil
 				}
+				m.VideoList.List.SetFilterState(list.Unfiltered)
+				return m, nil
 			}
 			m.VideoList, cmd = m.VideoList.Update(msg)
 
@@ -252,18 +239,20 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			switch msg.String() {
 			case "b", "esc":
 				if m.FormatList.ActiveTab != models.FormatTabCustom {
-					if m.FormatList.List.FilterState() == list.Unfiltered {
+					if HandleListEsc(m.FormatList.List) {
 						if m.SelectedVideo.ID == "" {
 							m.State = types.StateSearchInput
 							m.Search.Input.SetValue("")
-							m.FormatList.List.ResetFilter()
 						} else {
 							m.State = types.StateVideoList
 						}
 						m.ErrMsg = ""
+						m.FormatList.List.ResetFilter()
 						m.FormatList.List.ResetSelected()
 						return m, nil
 					}
+					m.FormatList.List.SetFilterState(list.Unfiltered)
+					return m, nil
 				}
 			}
 			m.FormatList, cmd = m.FormatList.Update(msg)
@@ -305,4 +294,8 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	return m, cmd
+}
+
+func HandleListEsc(l list.Model) bool {
+	return models.HandleListEsc(l)
 }

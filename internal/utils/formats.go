@@ -317,6 +317,24 @@ func FetchFormats(fm *FormatsManager, url string) tea.Cmd {
 
 		audioID, audioLang := getPreferredAudioFormat(formatsAny)
 
+		formatSizes := make(map[string]float64)
+		for _, fAny := range formatsAny {
+			f, ok := fAny.(map[string]any)
+			if !ok {
+				continue
+			}
+
+			formatID, _ := f["format_id"].(string)
+			if formatID != "" {
+				size, _ := f["filesize"].(float64)
+				if size == 0 {
+					size, _ = f["filesize_approx"].(float64)
+				}
+
+				formatSizes[formatID] = size
+			}
+		}
+
 		for _, fAny := range formatsAny {
 			f, ok := fAny.(map[string]any)
 			if !ok {
@@ -354,14 +372,34 @@ func FetchFormats(fm *FormatsManager, url string) tea.Cmd {
 					title = fmt.Sprintf("%s [%s]", title, audioLang)
 				}
 
+				videoSize := 0.0
+				audioSize := 0.0
+
+				videoSize, _ = f["filesize"].(float64)
+				if videoSize == 0 {
+					videoSize, _ = f["filesize_approx"].(float64)
+				}
+
+				audioSize = formatSizes[audioID]
+
+				var sizeStr string
+				if videoSize > 0 && audioSize > 0 {
+					totalSize := videoSize + audioSize
+					sizeStr = bytesToHuman(totalSize)
+				} else {
+					sizeStr = "unknown size"
+				}
+
 				preset := types.FormatItem{
 					FormatTitle: title,
 					FormatValue: formatID + "+" + audioID,
-					Size:        "unknown size",
+					Size:        sizeStr,
 					Language:    audioLang,
 					Resolution:  resolution,
 					FormatType:  "video-only+audio-only",
 					ABR:         0,
+					VideoSize:   videoSize,
+					AudioSize:   audioSize,
 				}
 
 				videoFormats = append(videoFormats, preset)

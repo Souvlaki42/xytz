@@ -1,8 +1,6 @@
 package app
 
 import (
-	"strings"
-
 	"github.com/xdagiz/xytz/internal/models"
 	"github.com/xdagiz/xytz/internal/styles"
 	"github.com/xdagiz/xytz/internal/types"
@@ -46,7 +44,7 @@ func (m *Model) Init() tea.Cmd {
 			m.VideoList.IsPlaylistSearch = false
 			m.VideoList.ChannelName = opts.Channel
 			m.VideoList.PlaylistURL = ""
-			cmd = utils.PerformChannelSearch(m.SearchManager, opts.Channel, m.Search.SearchLimit)
+			cmd = utils.PerformChannelSearch(m.SearchManager, opts.Channel, m.Search.SearchLimit, m.Search.CookiesFromBrowser, m.Search.Cookies)
 		}
 
 		if opts.Query != "" {
@@ -58,7 +56,7 @@ func (m *Model) Init() tea.Cmd {
 			m.VideoList.ChannelName = ""
 			m.VideoList.PlaylistName = ""
 			m.VideoList.PlaylistURL = ""
-			cmd = utils.PerformSearch(m.SearchManager, opts.Query, m.Search.SortBy.GetSPParam(), m.Search.SearchLimit)
+			cmd = utils.PerformSearch(m.SearchManager, opts.Query, m.Search.SortBy.GetSPParam(), m.Search.SearchLimit, m.Search.CookiesFromBrowser, m.Search.Cookies)
 		}
 
 		if opts.Playlist != "" {
@@ -68,25 +66,8 @@ func (m *Model) Init() tea.Cmd {
 			m.VideoList.IsPlaylistSearch = true
 			m.VideoList.IsChannelSearch = false
 			m.VideoList.PlaylistName = opts.Playlist
-
-			if strings.Contains(opts.Playlist, "https://www.youtube.com/playlist?list=") {
-				m.VideoList.PlaylistURL = opts.Playlist
-			} else if strings.Contains(opts.Playlist, "watch?v=") && strings.Contains(opts.Playlist, "list=") {
-				parts := strings.Split(opts.Playlist, "list=")
-				if len(parts) > 1 {
-					playlistID := parts[1]
-					if idx := strings.Index(playlistID, "&"); idx != -1 {
-						playlistID = playlistID[:idx]
-					}
-					m.VideoList.PlaylistURL = "https://www.youtube.com/playlist?list=" + playlistID
-				} else {
-					m.VideoList.PlaylistURL = "https://www.youtube.com/playlist?list=" + opts.Playlist
-				}
-			} else {
-				m.VideoList.PlaylistURL = "https://www.youtube.com/playlist?list=" + opts.Playlist
-			}
-
-			cmd = utils.PerformPlaylistSearch(m.SearchManager, m.VideoList.PlaylistURL, m.Search.SearchLimit)
+			m.VideoList.PlaylistURL = utils.BuildPlaylistURL(opts.Playlist)
+			cmd = utils.PerformPlaylistSearch(m.SearchManager, m.VideoList.PlaylistURL, m.Search.SearchLimit, m.Search.CookiesFromBrowser, m.Search.Cookies)
 		}
 	}
 
