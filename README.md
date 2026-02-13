@@ -147,28 +147,6 @@ cookies_file: "" # Path to cookies.txt file for authentication (optional)
 
 The configuration file is created automatically on first run with sensible defaults.
 
-## File Structure
-
-```
-xytz/
-├── main.go             # Application entry point
-├── internal/           # Internal packages
-│   ├── app/            # Main application logic (Bubble Tea model)
-│   ├── config/         # Configuration management
-│   ├── models/         # UI component models
-│   ├── slash/          # Slash command definitions
-│   ├── styles/         # Lipgloss styling
-│   ├── types/          # Type definitions and enums
-│   ├── utils/          # Utility functions
-│   └── version/        # Version information
-├── scripts/            # Build scripts
-│   └── build.sh
-├── go.mod              # Go module definition
-├── go.sum              # Go dependencies
-├── install.sh          # Installer script for unix systems
-└── README.md           # Readme
-```
-
 ## Contributing
 
 Contributions are welcome! Please follow these steps:
@@ -178,20 +156,6 @@ Contributions are welcome! Please follow these steps:
 3. **Commit** your changes: `git commit -m 'Add amazing feature'`
 4. **Push** to the branch: `git push origin feature/amazing-feature`
 5. **Open** a Pull Request
-
-### Development Setup
-
-```bash
-# Clone your fork
-git clone https://github.com/yourusername/xytz.git
-cd xytz
-
-# Install dependencies
-go mod tidy
-
-# Run in development mode
-go run .
-```
 
 ## Troubleshooting
 

@@ -26,7 +26,7 @@ type Config struct {
 	CookiesFile         string `yaml:"cookies_file"`
 }
 
-func GetConfigDir() string {
+var GetConfigDir = func() string {
 	return paths.GetConfigDir()
 }
 

@@ -40,7 +40,7 @@ func ExtractVideoID(url string) string {
 	}
 
 	if strings.Contains(url, "youtube.com/embed/") {
-		if result := extractAfterDelimiter(url, "youtube.com/embed/", "&", "#"); result != "" {
+		if result := extractAfterDelimiter(url, "youtube.com/embed/", "&", "#", "?"); result != "" {
 			return result
 		}
 	}
@@ -111,12 +111,15 @@ func BuildChannelURL(input string) string {
 		return channelURL
 	}
 
-	if len(input) >= 22 && strings.HasPrefix(input, "UC") {
+	if strings.HasPrefix(input, "@") {
+		return "https://www.youtube.com/" + input + "/videos"
+	}
+
+	if strings.HasPrefix(input, "UC") {
 		return "https://www.youtube.com/channel/" + input + "/videos"
 	}
 
-	encodedChannel := url.QueryEscape(input)
-	return "https://www.youtube.com/@" + encodedChannel + "/videos"
+	return "https://www.youtube.com/@" + url.PathEscape(input) + "/videos"
 }
 
 func ParseVideoItem(line string) (types.VideoItem, error) {

@@ -70,6 +70,10 @@ func (p *ProgressParser) ReadPipe(pipe io.Reader, sendProgress func(float64, str
 }
 
 func (p *ProgressParser) ParseLine(line string) (percent float64, speed, eta, status, destination string) {
+	// Reset state for this line - we'll set it if info is present
+	p.currentDestination = ""
+	p.currentFormat = ""
+
 	percentPatterns := []*regexp.Regexp{
 		regexp.MustCompile(`(\d+(?:\.\d+)?)\s*%`),
 		regexp.MustCompile(`\[download\]\s+(\d+(?:\.\d+)?)%`),

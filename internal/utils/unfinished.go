@@ -2,6 +2,7 @@ package utils
 
 import (
 	"encoding/json"
+	"errors"
 	"log"
 	"os"
 	"path/filepath"
@@ -9,6 +10,8 @@ import (
 
 	"github.com/xdagiz/xytz/internal/paths"
 )
+
+var ErrInvalidUnfinishedDownload = errors.New("unfinished download must have valid URL and title")
 
 const UnfinishedFileName = ".xytz_unfinished.json"
 
@@ -19,7 +22,7 @@ type UnfinishedDownload struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
-func GetUnfinishedFilePath() string {
+var GetUnfinishedFilePath = func() string {
 	dataDir := paths.GetDataDir()
 	if err := paths.EnsureDirExists(dataDir); err != nil {
 		log.Printf("Warning: Could not create data directory: %v", err)
@@ -59,6 +62,10 @@ func SaveUnfinished(downloads []UnfinishedDownload) error {
 }
 
 func AddUnfinished(download UnfinishedDownload) error {
+	if download.URL == "" || download.Title == "" {
+		return ErrInvalidUnfinishedDownload
+	}
+
 	downloads, err := LoadUnfinished()
 	if err != nil {
 		return err
