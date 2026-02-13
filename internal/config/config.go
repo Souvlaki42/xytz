@@ -15,7 +15,7 @@ const ConfigFileName = "config.yaml"
 type Config struct {
 	SearchLimit         int    `yaml:"search_limit"`
 	DefaultDownloadPath string `yaml:"default_download_path"`
-	DefaultFormat       string `yaml:"default_format"`
+	DefaultQuality      string `yaml:"default_quality"`
 	SortByDefault       string `yaml:"sort_by_default"`
 	EmbedSubtitles      bool   `yaml:"embed_subtitles"`
 	EmbedMetadata       bool   `yaml:"embed_metadata"`
@@ -89,13 +89,17 @@ func (c *Config) applyDefaults() {
 		c.DefaultDownloadPath = defaults.DefaultDownloadPath
 	}
 
-	if c.DefaultFormat == "" {
-		c.DefaultFormat = defaults.DefaultFormat
+	if c.DefaultQuality == "" {
+		c.DefaultQuality = defaults.DefaultQuality
 	}
 
 	if c.SortByDefault == "" {
 		c.SortByDefault = defaults.SortByDefault
 	}
+}
+
+func (c *Config) GetDefaultFormat() string {
+	return ResolveQuality(c.DefaultQuality)
 }
 
 func (c *Config) ExpandPath(path string) string {

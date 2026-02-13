@@ -51,10 +51,8 @@ func executeYTDLP(sm *SearchManager, searchURL string, searchLimit int, cookiesB
 	var args []string
 	if cookiesBrowser != "" {
 		args = append(args, "--cookies-from-browser", cookiesBrowser)
-		log.Printf("Using browser cookies: %s", cookiesBrowser)
 	} else if cookiesFile != "" {
 		args = append(args, "--cookies", cookiesFile)
-		log.Printf("Using cookies file: %s", cookiesFile)
 	}
 
 	args = append(args,

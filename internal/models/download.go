@@ -154,6 +154,7 @@ func (m DownloadModel) View() string {
 		if m.FileExtension != "" {
 			ext = m.FileExtension
 		}
+
 		finalPath := filepath.Join(m.Destination, title+ext)
 		s.WriteString(styles.CompletionMessageStyle.Render("Video saved to " + finalPath))
 		s.WriteRune('\n')
@@ -163,19 +164,23 @@ func (m DownloadModel) View() string {
 		s.WriteString(styles.ErrorMessageStyle.Render("Download was cancelled."))
 		s.WriteRune('\n')
 	} else {
-		bar := styles.ProgressContainer.Render(m.Progress.View())
-		s.WriteString(bar)
-		s.WriteRune('\n')
+		if m.Progress.Percent() == 0 {
+			s.WriteString(styles.MutedStyle.Render("Starting download..."))
+			s.WriteRune('\n')
+		} else {
+			bar := styles.ProgressContainer.Render(m.Progress.View())
+			s.WriteString(bar)
+			s.WriteRune('\n')
 
-		s.WriteString("Speed: " + styles.SpeedStyle.Render(m.CurrentSpeed))
-		s.WriteRune('\n')
+			s.WriteString("Speed: " + styles.SpeedStyle.Render(m.CurrentSpeed))
+			s.WriteRune('\n')
 
-		s.WriteString("Time remaining: " + styles.TimeRemainingStyle.Render(m.CurrentETA))
-		s.WriteRune('\n')
+			s.WriteString("Time remaining: " + styles.TimeRemainingStyle.Render(m.CurrentETA))
+			s.WriteRune('\n')
 
-		dest := m.Destination
-		s.WriteString("Destination: " + styles.DestinationStyle.Render(dest))
-		s.WriteRune('\n')
+			s.WriteString("Destination: " + styles.DestinationStyle.Render(m.Destination))
+			s.WriteRune('\n')
+		}
 	}
 
 	return s.String()

@@ -84,6 +84,7 @@ type StartDownloadMsg struct {
 	IsAudioTab      bool
 	ABR             float64
 	DownloadOptions []DownloadOption
+	SelectedVideo   VideoItem
 }
 
 type DownloadResultMsg struct {

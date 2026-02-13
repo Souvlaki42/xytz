@@ -68,8 +68,9 @@ func getStatusBarText(state types.State, cfg StatusBarConfig, helpKeys models.He
 			})
 		}
 		return models.FormatKeysForStatusBar(models.StatusKeys{
-			Quit: cfg.Keys.Quit,
-			Back: cfg.Keys.Back,
+			Quit:            cfg.Keys.Quit,
+			Back:            cfg.Keys.Back,
+			DownloadDefault: cfg.Keys.DownloadDefault,
 		})
 	case types.StateFormatList:
 		return models.FormatKeysForStatusBar(models.StatusKeys{

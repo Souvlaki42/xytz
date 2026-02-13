@@ -4,7 +4,7 @@ func GetDefault() *Config {
 	return &Config{
 		SearchLimit:         25,
 		DefaultDownloadPath: "~/Videos",
-		DefaultFormat:       "bv*+ba/b",
+		DefaultQuality:      "best",
 		SortByDefault:       "relevance",
 		EmbedSubtitles:      false,
 		EmbedMetadata:       true,

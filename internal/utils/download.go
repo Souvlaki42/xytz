@@ -96,7 +96,6 @@ func doDownload(dm *DownloadManager, program *tea.Program, req types.DownloadReq
 			"-o",
 			filepath.Join(outputPath, "%(artist)s - %(title)s.%(ext)s"),
 			"--restrict-filenames",
-			"--embed-thumbnail",
 			"-x",
 			"--audio-format",
 			"mp3",
@@ -192,18 +191,6 @@ func doDownload(dm *DownloadManager, program *tea.Program, req types.DownloadReq
 	go readPipe(stderr)
 	wg.Wait()
 	err = cmd.Wait()
-
-	if stdout != nil {
-		if err := stdout.Close(); err != nil {
-			log.Printf("failed to close progress stdout: %v", err)
-		}
-	}
-
-	if stderr != nil {
-		if err := stderr.Close(); err != nil {
-			log.Printf("failed to close progress stderr; %v", err)
-		}
-	}
 
 	dm.Clear()
 

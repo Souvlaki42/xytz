@@ -9,19 +9,20 @@ import (
 )
 
 type StatusKeys struct {
-	Quit   key.Binding
-	Back   key.Binding
-	Enter  key.Binding
-	Pause  key.Binding
-	Cancel key.Binding
-	Tab    key.Binding
-	Help   key.Binding
-	Up     key.Binding
-	Down   key.Binding
-	Select key.Binding
-	Delete key.Binding
-	Next   key.Binding
-	Prev   key.Binding
+	Quit            key.Binding
+	Back            key.Binding
+	Enter           key.Binding
+	Pause           key.Binding
+	Cancel          key.Binding
+	Tab             key.Binding
+	Help            key.Binding
+	Up              key.Binding
+	Down            key.Binding
+	Select          key.Binding
+	Delete          key.Binding
+	Next            key.Binding
+	Prev            key.Binding
+	DownloadDefault key.Binding
 }
 
 func GetStatusKeys(state types.State, helpVisible bool, resumeVisible bool) StatusKeys {
@@ -49,6 +50,10 @@ func GetStatusKeys(state types.State, helpVisible bool, resumeVisible bool) Stat
 		keys.Back = key.NewBinding(
 			key.WithKeys("esc", "b"),
 			key.WithHelp("Esc/b", "back"),
+		)
+		keys.DownloadDefault = key.NewBinding(
+			key.WithKeys("d"),
+			key.WithHelp("d", "download with default quality"),
 		)
 
 	case types.StateFormatList:
@@ -124,6 +129,7 @@ func FormatKeysForStatusBar(keys StatusKeys) string {
 	addKey(keys.Delete)
 	addKey(keys.Next)
 	addKey(keys.Prev)
+	addKey(keys.DownloadDefault)
 
 	return strings.Join(parts, " • ")
 }
@@ -148,6 +154,7 @@ func FormatKeysForStatusBarItalic(keys StatusKeys, italicKey string) string {
 	addKey(keys.Down, "Down")
 	addKey(keys.Select, "Select")
 	addKey(keys.Delete, "Delete")
+	addKey(keys.DownloadDefault, "DownloadDefault")
 
 	return strings.Join(parts, " • ")
 }

@@ -2,8 +2,10 @@ package models
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
+	"github.com/xdagiz/xytz/internal/config"
 	"github.com/xdagiz/xytz/internal/styles"
 	"github.com/xdagiz/xytz/internal/types"
 	"github.com/xdagiz/xytz/internal/utils"
@@ -100,6 +102,42 @@ func (m VideoListModel) Update(msg tea.Msg) (VideoListModel, tea.Cmd) {
 
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
+		switch msg.String() {
+		case "d":
+			if m.ErrMsg != "" || len(m.List.Items()) == 0 {
+				return m, nil
+			}
+
+			if video, ok := m.List.SelectedItem().(types.VideoItem); ok {
+				var url string
+				if m.IsPlaylistSearch && m.PlaylistURL != "" {
+					playlistID := utils.ExtractPlaylistID(m.PlaylistURL)
+					if playlistID != "" {
+						url = fmt.Sprintf("https://www.youtube.com/watch?v=%s&list=%s", video.ID, playlistID)
+					} else {
+						url = "https://www.youtube.com/watch?v=" + video.ID
+					}
+				} else {
+					url = "https://www.youtube.com/watch?v=" + video.ID
+				}
+
+				cfg, err := config.Load()
+				if err != nil {
+					log.Printf("Warning: Failed to load config: %v", err)
+					cfg = config.GetDefault()
+				}
+
+				formatID := cfg.GetDefaultFormat()
+
+				cmd = func() tea.Msg {
+					return types.StartDownloadMsg{
+						URL:           url,
+						FormatID:      formatID,
+						SelectedVideo: video,
+					}
+				}
+			}
+		}
 		switch msg.Type {
 		case tea.KeyEnter:
 			if m.List.FilterState() == list.Filtering {

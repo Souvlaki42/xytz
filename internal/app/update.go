@@ -76,7 +76,9 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.State = types.StateDownload
 		m.Download.Completed = false
 		m.Download.Cancelled = false
-		if m.SelectedVideo.ID == "" {
+		if msg.SelectedVideo.ID != "" {
+			m.Download.SelectedVideo = msg.SelectedVideo
+		} else if m.SelectedVideo.ID == "" {
 			m.Download.SelectedVideo = m.FormatList.SelectedVideo
 		} else {
 			m.Download.SelectedVideo = m.SelectedVideo

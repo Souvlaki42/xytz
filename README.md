@@ -93,14 +93,16 @@ xytz supports command-line arguments for quick access to search, channels, and p
 
 ### Quick Reference
 
-| Flag         | Short | Description                                          |
-| ------------ | ----- | ---------------------------------------------------- |
-| `--number`   | `-n`  | Number of search results                             |
-| `--sort-by`  | `-s`  | Sort results: `relevance`, `date`, `views`, `rating` |
-| `--query`    | `-q`  | Direct search query                                  |
-| `--channel`  | `-c`  | Browse channel (use `@username` format)              |
-| `--playlist` | `-p`  | Browse playlist (use playlist ID)                    |
-| `--help`     | `-h`  | Show help message                                    |
+| Flag                     | Short | Description                                          |
+| ------------------------ | ----- | ---------------------------------------------------- |
+| `--number`               | `-n`  | Number of search results                             |
+| `--sort-by`              | `-s`  | Sort results: `relevance`, `date`, `views`, `rating` |
+| `--query`                | `-q`  | Direct search query                                  |
+| `--channel`              | `-c`  | Browse channel (use `@username` format)              |
+| `--playlist`             | `-p`  | Browse playlist (use playlist ID)                    |
+| `--help`                 | `-h`  | Show help message                                    |
+| `--cookies-from-browser` |       | The browser name to load cookies from                |
+| `--cookies`              |       | Path to a `cookies.txt` file to read cookies from    |
 
 > **Note:** Default values for these flags are grabbed from the configuration file (`~/.config/xytz/config.yaml`).
 
@@ -132,7 +134,7 @@ xytz uses a YAML configuration file located at `~/.config/xytz/config.yaml`.
 ```yaml
 search_limit: 25 # Number of search results
 default_download_path: ~/Videos # Download destination
-default_format: bestvideo+bestaudio/best # Default format selection
+default_quality: best # Default format selection (480p, 720p, 1080p, 4k...)
 sort_by_default: relevance # Default sort: relevance, date, views, rating
 embed_subtitles: false # Embed subtitles in downloads
 embed_metadata: true # Embed metadata in downloads
